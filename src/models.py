@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
+
 from database import Base
 
 
@@ -26,4 +27,3 @@ phone = Table(
     Column("id_workstation", Integer, ForeignKey("workstation.id")),
     Column("phone", String(250), nullable=False),
 )
-
