@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from routers import city
+
 app = FastAPI()
 
 # app.include_router(workstation.router)

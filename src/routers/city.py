@@ -68,6 +68,7 @@ async def post_city(data: CityModel, db: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
+
 @router.get("/city", tags=["City"])
 async def get_city(
     city_id: Union[int, None] = None, db: Session = Depends(get_db)
