@@ -26,6 +26,14 @@ class CityModel(BaseModel):
 Base.metadata.create_all(bind=engine)
 
 
+def get_error_response(e: Exception):
+    return {
+        "message": "Erro ao processar dados",
+        "error": str(e),
+        "data": None,
+    }
+
+
 @router.post("/city", tags=["City"], response_model=CityModel)
 async def post_city(data: CityModel, db: Session = Depends(get_db)):
     try:
@@ -57,5 +65,52 @@ async def post_city(data: CityModel, db: Session = Depends(get_db)):
 
         return JSONResponse(
             content=response_data,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@router.get("/city", tags=["City"])
+async def get_city(
+    city_id: Union[int, None] = None, db: Session = Depends(get_db)
+):
+    try:
+        if city_id:
+            city = (
+                db.query(City).filter_by(id=city_id).one_or_none()
+            )
+
+            if city is not None:
+                city = jsonable_encoder(city)
+                message = "Dados buscados com sucesso"
+                status_code = status.HTTP_200_OK
+            else:
+                message = "Nenhuma cidade encontrada"
+                status_code = status.HTTP_200_OK
+
+            response_data = {
+                "message": message,
+                "error": None,
+                "data": city,
+            }
+
+            return JSONResponse(
+                content=jsonable_encoder(response_data),
+                status_code=status_code,
+            )
+        else:
+            all_data = db.query(City).all()
+            all_data = [jsonable_encoder(c) for c in all_data]
+            response_data = {
+                "message": "Dados buscados com sucesso",
+                "error": None,
+                "data": all_data,
+            }
+            return JSONResponse(
+                content=dict(response_data), status_code=status.HTTP_200_OK
+            )
+
+    except Exception as e:
+        return JSONResponse(
+            content=get_error_response(e),
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
