@@ -84,7 +84,7 @@ async def get_city(
                 message = "Dados buscados com sucesso"
                 status_code = status.HTTP_200_OK
             else:
-                message = "Nenhuma categoria encontrada"
+                message = "Nenhuma cidade encontrada"
                 status_code = status.HTTP_200_OK
 
             response_data = {
@@ -98,7 +98,7 @@ async def get_city(
                 status_code=status_code,
             )
         else:
-            all_data = db.query(City).filter_by(active=True).all()
+            all_data = db.query(City).all()
             all_data = [jsonable_encoder(c) for c in all_data]
             response_data = {
                 "message": "Dados buscados com sucesso",

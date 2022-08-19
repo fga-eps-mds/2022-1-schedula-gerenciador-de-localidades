@@ -1,14 +1,16 @@
-def test_city(client):
-    response = client.get("/city")
+def test_get_city(client):
+    url = "/city"
+    response = client.get(url)
     assert response.status_code == 200
+    
 
-
-def test_city_id(client):
-    response = client.get("/city?city_id=2")
+def test_get_cityid(client):
+    url = "/city?city_id=2"
+    response = client.get(url)
     assert response.status_code == 200
     assert response.json()["data"] == {
         "id": 2,
-        "name": "cidade 2",
+        "name": "Cidade 2",
     }
 
 
