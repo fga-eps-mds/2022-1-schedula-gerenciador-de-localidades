@@ -1,6 +1,6 @@
 def test_put_city(client):
     response = client.put(
-        "/city/1", json={"name": "test"}
+        "/city/1", json={"name": "new test"}
     )
     assert response.status_code == 200
 
