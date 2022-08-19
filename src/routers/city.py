@@ -114,3 +114,48 @@ async def get_city(
             content=get_error_response(e),
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+
+@router.put("/city/{city_id}", tags=["City"])
+async def update_city(
+    data: CityModel,
+    city_id: int = Path(title="The ID of the item to update"),
+    db: Session = Depends(get_db),
+):
+    try:
+        city = (
+            db.query(City).filter_by(id=city_id).update(data.dict())
+        )
+        if city:
+            db.commit()
+            city_data = db.query(City).filter_by(id=city_id).one_or_none()
+            city_data = jsonable_encoder(city_data)
+            # data = jsonable_encoder(city)
+            response_data = jsonable_encoder(
+                {
+                    "message": "Dado atualizado com sucesso",
+                    "error": None,
+                    "data": city_data,
+                }
+            )
+
+            return JSONResponse(
+                content=response_data, status_code=status.HTTP_200_OK
+            )
+        else:
+            response_data = jsonable_encoder(
+                {
+                    "message": "Cidade não encontrada",
+                    "error": None,
+                    "data": None,
+                }
+            )
+
+            return JSONResponse(
+                content=response_data, status_code=status.HTTP_200_OK
+            )
+    except Exception as e:
+        return JSONResponse(
+            content=get_error_response(e),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
