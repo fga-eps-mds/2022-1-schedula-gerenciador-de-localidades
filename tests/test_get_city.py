@@ -2,7 +2,7 @@ def test_get_city(client):
     url = "/city"
     response = client.get(url)
     assert response.status_code == 200
-    
+
 
 def test_get_cityid(client):
     url = "/city?city_id=2"
