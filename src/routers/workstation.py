@@ -19,6 +19,7 @@ class WorkstationModel(BaseModel):
     regional: bool = False
     city_id: int
     regional_id: int | None = None
+    active: bool = True
 
     class Config:
         schema_extra = {

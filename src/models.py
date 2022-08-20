@@ -19,6 +19,7 @@ class Workstation(Base):
     regional = Column(Boolean, nullable=False, default=False)
     city_id = Column(Integer, ForeignKey("city.id"), nullable=False)
     regional_id = Column(Integer, ForeignKey("workstation.id"), nullable=True)
+    active = Column(Boolean, nullable=False, default=True)
 
 
 phone = Table(
