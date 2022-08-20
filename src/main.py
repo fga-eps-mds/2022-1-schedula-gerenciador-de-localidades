@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.routers import workstation
+from routers import city
 
 app = FastAPI()
 
@@ -16,6 +16,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+app.include_router(city.router)
 
 @app.get("/")
 def root():
