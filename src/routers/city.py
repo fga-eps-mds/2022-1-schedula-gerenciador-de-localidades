@@ -1,4 +1,5 @@
 from typing import Union
+from unicodedata import name
 
 from fastapi import APIRouter, Depends, Path, status
 from fastapi.encoders import jsonable_encoder
@@ -154,6 +155,31 @@ async def update_city(
             return JSONResponse(
                 content=response_data, status_code=status.HTTP_200_OK
             )
+    except Exception as e:
+        return JSONResponse(
+            content=get_error_response(e),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@router.delete("/city/{city_id}", tags=["City"])
+async def delete_city(city_id: int, db: Session = Depends(get_db)):
+    try:
+        city = db.query(City).filter_by(id=city_id).one_or_none()
+        if city:
+            db.query(City).filter_by(id=city_id).delete()
+            db.commit()
+            message = f"Cidade de id = {city_id} deletada com sucesso"
+
+        else:
+            message = f"Cidade de id = {city_id} não encontrada"
+
+        response_data = {"message": message, "error": None, "data": None}
+
+        return JSONResponse(
+            content=response_data, status_code=status.HTTP_200_OK
+        )
+
     except Exception as e:
         return JSONResponse(
             content=get_error_response(e),
