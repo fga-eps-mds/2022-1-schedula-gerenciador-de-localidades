@@ -18,8 +18,6 @@ app.add_middleware(
 )
 
 
-
-
 @app.get("/")
 def root():
     return {"APP": "Gerenciador de localidades is running"}

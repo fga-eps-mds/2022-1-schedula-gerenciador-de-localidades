@@ -35,4 +35,3 @@ def test_post_regional_error(client):
                                "city_id": 5
                            })
     assert response.status_code == 400
-
