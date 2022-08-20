@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 from starlette import status
 from starlette.responses import JSONResponse
 
-from src.database import engine, get_db
-from src.models import Base, Workstation
+from database import engine, get_db
+from models import Base, City, Workstation
 
 router = APIRouter()
 
@@ -27,7 +27,7 @@ class WorkstationModel(BaseModel):
                 "asdl_vpn": True,
                 "link": "7ª DP  Aparecida",
                 "ip": "10.11.1.1",
-                "regional": False,
+                "regional": True,
                 "city_id": 1
             }
         }
@@ -35,22 +35,29 @@ class WorkstationModel(BaseModel):
     Base.metadata.create_all(bind=engine)
 
 
-def get_error_response(e: Exception):
-    return {
-        "message": "Erro ao processar dados",
-        "error": str(e),
-        "data": None,
-    }
-
-
 @router.post("/workstation", tags=["Workstation"], response_model=WorkstationModel)
 async def post_workstation(data: WorkstationModel, db: Session = Depends(get_db)):
-    if not data.regional and not data.regional_id:
-        return JSONResponse(
-            content=get_error_response(Exception("Forneça o id do posto de trabalho que é regional.")),
-            status_code=status.HTTP_400_BAD_REQUEST
-        )
     try:
+        if not data.regional and not data.regional_id:
+            return JSONResponse(
+                content={
+                    "message": "Erro ao processar dados",
+                    "error": True,
+                    "data": None,
+                },
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not db.query(City).filter_by(id=data.city_id).one_or_none():
+            return JSONResponse(
+                content={
+                    "message": f"A cidade de id {data.city_id} não está cadastrada.",
+                    "error": True,
+                    "data": None,
+                },
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
         new_object = Workstation(**data.dict())
         db.add(new_object)
         db.commit()
@@ -69,5 +76,9 @@ async def post_workstation(data: WorkstationModel, db: Session = Depends(get_db)
         )
     except Exception as e:
         return JSONResponse(
-            content=get_error_response(e), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            content={
+                "message": "Erro ao processar dados",
+                "error": str(e),
+                "data": None,
+            }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
