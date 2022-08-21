@@ -19,6 +19,7 @@ CREATE TABLE "public"."workstation" (
     link VARCHAR(250),
     asdl_vpn BOOLEAN NOT NULL DEFAULT FALSE,
     regional BOOLEAN NOT NULL DEFAULT FALSE,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
     regional_id INTEGER,
     CONSTRAINT "workstation_workstation_fk" FOREIGN KEY (regional_id) 
     REFERENCES "public"."workstation" (id),
