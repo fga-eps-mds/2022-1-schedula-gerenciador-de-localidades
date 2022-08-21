@@ -170,3 +170,57 @@ async def delete_workstation(workstation_id: int, db: Session = Depends(get_db))
                 "error": str(e),
                 "data": None,
             }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@router.put("/workstation/{workstation_id}", tags=["Workstation"], response_model=WorkstationModel)
+async def put_workstation(workstation_id: int, data: WorkstationModel, db: Session = Depends(get_db)):
+    try:
+        if not data.regional and not data.regional_id:
+            return JSONResponse(
+                content={
+                    "message": "Caso o posto de trabalho não seja regional, forneça o a regional à qual ele pertence.",
+                    "error": True,
+                    "data": None,
+                },
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not db.query(City).filter_by(id=data.city_id).one_or_none():
+            return JSONResponse(
+                content={
+                    "message": f"A cidade de id = {data.city_id} não está cadastrada.",
+                    "error": True,
+                    "data": None,
+                },
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        if db.query(Workstation).filter_by(id=workstation_id).one_or_none() == None:
+            return JSONResponse(
+                content={
+                    "message": f"O Posto de Trabalho de id = {workstation_id} não está cadastrado.",
+                    "error": True,
+                    "data": None,
+                },
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        db.query(Workstation).filter_by(id=workstation_id).update(data.dict())
+        db.commit()
+
+        response_data = jsonable_encoder(
+            {
+                "message": "Dado atualizado com sucesso",
+                "error": None,
+                "data": jsonable_encoder(data)
+            }
+        )
+        return JSONResponse(
+            content=response_data, status_code=status.HTTP_200_OK
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={
+                "message": "Erro ao processar dados",
+                "error": str(e),
+                "data": None,
+            }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
