@@ -139,3 +139,34 @@ def get_workstation(id: Union[int, None] = None,
                 "data": None,
             },
         )
+
+@router.delete("/workstation/{workstation_id}", tags=["Workstation"], response_model=WorkstationModel)
+async def delete_workstation(workstation_id: int, db: Session = Depends(get_db)):
+    try:
+        workstation: WorkstationModel = db.query(
+            Workstation).filter_by(id=workstation_id).one_or_none()
+        if not workstation:
+            return JSONResponse(
+                content={
+                    "message": f"Nenhum posto de trabalho com id = {workstation_id} encontrado.",
+                    "error": True,
+                    "data": None,
+                }, status_code=status.HTTP_400_BAD_REQUEST
+            )
+        workstation.active = False
+        db.add(workstation)
+        db.commit()
+        return JSONResponse(
+            content={
+                "message": f"Posto de trabalho de id = {workstation_id} deletado com sucesso",
+                "error": True,
+                "data": None,
+            }, status_code=status.HTTP_200_OK)
+
+    except Exception as e:
+        return JSONResponse(
+            content={
+                "message": "Erro ao processar dados",
+                "error": str(e),
+                "data": None,
+            }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
