@@ -4,7 +4,7 @@ def test_get_workstation(client):
     assert response.status_code == 200
 
 
-def test_get_workstation(client):
+def test_get_workstationid(client):
     url = "/workstation?id=1"
     response = client.get(url)
     assert response.status_code == 200
