@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from routers import city, workstation
 
 app = FastAPI()
 
-# app.include_router(city.router)
-# app.include_router(workstation.router)
+app.include_router(workstation.router)
+app.include_router(city.router)
 
 app.add_middleware(
     CORSMiddleware,
