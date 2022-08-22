@@ -33,6 +33,7 @@ def get_error_response(e: Exception):
 @router.post("/city", tags=["City"], response_model=CityModel)
 async def post_city(data: CityModel, db: Session = Depends(get_db)):
     try:
+        data.name = data.name.strip()
         city = City(**data.dict())
 
         db.add(city)
@@ -113,6 +114,8 @@ async def update_city(
     db: Session = Depends(get_db),
 ):
     try:
+        if data.name:
+            data.name = data.name.strip()
         city = db.query(City).filter_by(id=city_id).update(data.dict())
         if city:
             db.commit()

@@ -44,6 +44,7 @@ class WorkstationModel(BaseModel):
 async def post_workstation(
     data: WorkstationModel, db: Session = Depends(get_db)
 ):
+    data.name = data.name.strip()
     try:
         if not data.regional and not data.regional_id:
             return JSONResponse(
@@ -202,6 +203,8 @@ async def put_workstation(
     workstation_id: int, data: WorkstationModel, db: Session = Depends(get_db)
 ):
     try:
+        if data.name:
+            data.name = data.name.strip()
         if not data.regional and not data.regional_id:
             return JSONResponse(
                 content={
