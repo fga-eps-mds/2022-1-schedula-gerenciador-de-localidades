@@ -1,5 +1,4 @@
 from typing import Union
-from unicodedata import name
 
 from fastapi import APIRouter, Depends, Path, status
 from fastapi.encoders import jsonable_encoder
@@ -17,11 +16,7 @@ class CityModel(BaseModel):
     name: str
 
     class Config:
-        schema_extra = {
-            "example": {
-                "name": "Cidade",
-            }
-        }
+        schema_extra = {"example": {"name": "Cidade"}}
 
 
 Base.metadata.create_all(bind=engine)
@@ -76,9 +71,7 @@ async def get_city(
 ):
     try:
         if city_id:
-            city = (
-                db.query(City).filter_by(id=city_id).one_or_none()
-            )
+            city = db.query(City).filter_by(id=city_id).one_or_none()
 
             if city is not None:
                 city = jsonable_encoder(city)
@@ -88,11 +81,7 @@ async def get_city(
                 message = "Nenhuma cidade encontrada"
                 status_code = status.HTTP_200_OK
 
-            response_data = {
-                "message": message,
-                "error": None,
-                "data": city,
-            }
+            response_data = {"message": message, "error": None, "data": city}
 
             return JSONResponse(
                 content=jsonable_encoder(response_data),
@@ -124,9 +113,7 @@ async def update_city(
     db: Session = Depends(get_db),
 ):
     try:
-        city = (
-            db.query(City).filter_by(id=city_id).update(data.dict())
-        )
+        city = db.query(City).filter_by(id=city_id).update(data.dict())
         if city:
             db.commit()
             city_data = db.query(City).filter_by(id=city_id).one_or_none()

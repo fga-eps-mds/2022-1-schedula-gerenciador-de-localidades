@@ -13,11 +13,11 @@ def test_get_workstationid(client):
         "city_id": 1,
         "name": "1ª DP de Goiânia",
         "ip": "127.0.0.0",
-        "link": 'exemplo de link',
+        "link": "exemplo de link",
         "asdl_vpn": True,
         "regional": True,
         "regional_id": None,
-        "active": True
+        "active": False,
     }
 
 

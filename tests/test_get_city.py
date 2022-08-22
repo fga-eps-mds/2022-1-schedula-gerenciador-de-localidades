@@ -8,10 +8,7 @@ def test_get_cityid(client):
     url = "/city?city_id=2"
     response = client.get(url)
     assert response.status_code == 200
-    assert response.json()["data"] == {
-        "id": 2,
-        "name": "Cidade 2",
-    }
+    assert response.json()["data"] == {"id": 2, "name": "Cidade 2"}
 
 
 def test_city_id_not_found(client):
