@@ -1,4 +1,7 @@
 # gerenciador-de-localidades
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=fga-eps-mds_2022-1-schedula-gerenciador-de-localidades&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=fga-eps-mds_2022-1-schedula-gerenciador-de-localidades)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=fga-eps-mds_2022-1-schedula-gerenciador-de-localidades&metric=coverage)](https://sonarcloud.io/summary/new_code?id=fga-eps-mds_2022-1-schedula-gerenciador-de-localidades) 
+
 Micro-serviço responsável por realizar a lógica relacionada a localidades do Schedula
 
 
@@ -27,6 +30,12 @@ Micro-serviço responsável por realizar a lógica relacionada a localidades do 
     $ docker-compose up --build -d
 ```
 acessar o site: `http://localhost:5000/`
+
+## Testes
+    
+```
+    $ docker exec -it gerenciador-de-localidades pytest --cov -vv
+```
 
 ## Lint
 
