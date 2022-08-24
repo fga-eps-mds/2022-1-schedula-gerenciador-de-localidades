@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Dict, List, Union
 
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
@@ -8,7 +8,7 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from database import engine, get_db
-from models import Base, City, Workstation
+from models import Base, City, Workstation, Phone
 
 router = APIRouter()
 
@@ -22,6 +22,7 @@ class WorkstationModel(BaseModel):
     city_id: int
     regional_id: int | None = None
     active: bool = True
+    phone: List[Dict[str, str]] | None = None
 
     class Config:
         schema_extra = {
@@ -32,6 +33,7 @@ class WorkstationModel(BaseModel):
                 "ip": "10.11.1.1",
                 "regional": True,
                 "city_id": 1,
+                "phone": [{"phone": "48946513"}, {"phone": "161651561"}]
             }
         }
 
@@ -55,7 +57,6 @@ async def post_workstation(
                 },
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
-
         if not db.query(City).filter_by(id=data.city_id).one_or_none():
             return JSONResponse(
                 content={
@@ -66,7 +67,9 @@ async def post_workstation(
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
+        new_phones = [Phone(**p) for p in data.phone]
         new_object = Workstation(**data.dict())
+        new_object.phone = new_phones
         db.add(new_object)
         db.commit()
         db.refresh(new_object)
@@ -78,7 +81,6 @@ async def post_workstation(
                 "data": new_object,
             }
         )
-
         return JSONResponse(
             content=response_data, status_code=status.HTTP_201_CREATED
         )
@@ -94,10 +96,9 @@ async def post_workstation(
 
 
 @router.get("/workstation", tags=["Workstation"])
-def get_workstation(
+async def get_workstation(
     id: Union[int, None] = None, db: Session = Depends(get_db)
 ):
-
     try:
         if id:
             workstation = (
@@ -105,7 +106,6 @@ def get_workstation(
                 .filter(Workstation.id == id)
                 .one_or_none()
             )
-
             if workstation is None:
                 return JSONResponse(
                     status_code=status.HTTP_200_OK,
@@ -115,7 +115,6 @@ def get_workstation(
                         "data": None,
                     },
                 )
-
             else:
                 workstation = jsonable_encoder(workstation)
                 return JSONResponse(
@@ -126,7 +125,6 @@ def get_workstation(
                         "data": workstation,
                     },
                 )
-
         else:
             all_data = db.query(Workstation).filter_by(active=True).all()
             all_data_json = jsonable_encoder(all_data)
@@ -138,7 +136,6 @@ def get_workstation(
                     "data": all_data_json,
                 },
             )
-
     except Exception as e:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -182,7 +179,6 @@ async def delete_workstation(
             },
             status_code=status.HTTP_200_OK,
         )
-
     except Exception as e:
         return JSONResponse(
             content={
@@ -214,7 +210,6 @@ async def put_workstation(
                 },
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
-
         if not db.query(City).filter_by(id=data.city_id).one_or_none():
             return JSONResponse(
                 content={
@@ -237,10 +232,8 @@ async def put_workstation(
                 },
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
-
         db.query(Workstation).filter_by(id=workstation_id).update(data.dict())
         db.commit()
-
         response_data = jsonable_encoder(
             {
                 "message": "Dado atualizado com sucesso",
