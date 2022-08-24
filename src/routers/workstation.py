@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import Union
 
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
@@ -8,7 +8,7 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from database import engine, get_db
-from models import Base, City, Workstation, Phone
+from models import Base, City, Workstation
 
 router = APIRouter()
 
@@ -22,7 +22,6 @@ class WorkstationModel(BaseModel):
     city_id: int
     regional_id: int | None = None
     active: bool = True
-    phone: List[Dict[str, str]] | None = None
 
     class Config:
         schema_extra = {
@@ -33,7 +32,6 @@ class WorkstationModel(BaseModel):
                 "ip": "10.11.1.1",
                 "regional": True,
                 "city_id": 1,
-                "phone": [{"phone": "48946513"}, {"phone": "161651561"}]
             }
         }
 
@@ -68,9 +66,7 @@ async def post_workstation(
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
-        new_phones = [Phone(**p) for p in data.phone]
         new_object = Workstation(**data.dict())
-        new_object.phone = new_phones
         db.add(new_object)
         db.commit()
         db.refresh(new_object)
