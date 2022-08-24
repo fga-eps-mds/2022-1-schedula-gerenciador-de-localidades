@@ -1,5 +1,5 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
-
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 from database import Base
 
 
@@ -20,11 +20,14 @@ class Workstation(Base):
     city_id = Column(Integer, ForeignKey("city.id"), nullable=False)
     regional_id = Column(Integer, ForeignKey("workstation.id"), nullable=True)
     active = Column(Boolean, nullable=False, default=True)
+    phone = relationship("Phone", back_populates="workstation")
 
 
-phone = Table(
-    "phone",
-    Base.metadata,
-    Column("id_workstation", Integer, ForeignKey("workstation.id")),
-    Column("phone", String(250), nullable=False),
-)
+class Phone(Base):
+    __tablename__ = "phone"
+    id = Column(Integer, primary_key=True)
+    id_workstation = Column("id_workstation", Integer,
+                            ForeignKey("workstation.id"))
+    phone = Column("phone", String(250), nullable=False)
+    workstation = relationship("Workstation", back_populates="phone")
+
