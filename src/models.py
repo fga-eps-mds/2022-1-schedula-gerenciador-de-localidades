@@ -1,5 +1,6 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+
 from database import Base
 
 
@@ -26,7 +27,7 @@ class Workstation(Base):
 class Phone(Base):
     __tablename__ = "phone"
     id = Column(Integer, primary_key=True)
-    id_workstation = Column("id_workstation", Integer,
+    workstation_id = Column("workstation_id", Integer,
                             ForeignKey("workstation.id"))
-    phone = Column("phone", String(250), nullable=False)
+    number = Column("number", String(250), nullable=False)
     workstation = relationship("Workstation", back_populates="phone")

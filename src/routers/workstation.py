@@ -8,9 +8,11 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from database import engine, get_db
-from models import Base, City, Workstation, Phone
+from models import Base, City, Phone, Workstation
 
 router = APIRouter()
+
+Base.metadata.create_all(bind=engine)
 
 
 class WorkstationModel(BaseModel):
@@ -33,11 +35,9 @@ class WorkstationModel(BaseModel):
                 "ip": "10.11.1.1",
                 "regional": True,
                 "city_id": 1,
-                "phone": [{"phone": "48946513"}, {"phone": "161651561"}]
+                "phone": [{"number": "48946513"}, {"number": "161651561"}]
             }
         }
-
-    Base.metadata.create_all(bind=engine)
 
 
 @router.post(
@@ -67,9 +67,8 @@ async def post_workstation(
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
-        new_phones = [Phone(**p) for p in data.phone]
+        data.phone = [Phone(**p) for p in data.phone]
         new_object = Workstation(**data.dict())
-        new_object.phone = new_phones
         db.add(new_object)
         db.commit()
         db.refresh(new_object)
