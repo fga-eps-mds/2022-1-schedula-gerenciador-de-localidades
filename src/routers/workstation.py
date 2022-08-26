@@ -94,6 +94,7 @@ async def post_workstation(
         )
 
 
+# @TODO: incluir filtro de workstation, listar todos
 @router.get("/workstation", tags=["Workstation"])
 async def get_workstation(
     id: Union[int, None] = None, db: Session = Depends(get_db)
@@ -105,6 +106,8 @@ async def get_workstation(
                 .filter(Workstation.id == id)
                 .one_or_none()
             )
+            workstation.phone = db.query(Phone).filter_by(
+                workstation_id=id).all()
             if workstation is None:
                 return JSONResponse(
                     status_code=status.HTTP_200_OK,
@@ -158,6 +161,7 @@ async def delete_workstation(
         workstation: WorkstationModel = db.query(Workstation).filter_by(
             id=workstation_id
         ).one_or_none()
+
         if not workstation:
             return JSONResponse(
                 content={
@@ -167,6 +171,10 @@ async def delete_workstation(
                 },
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
+        workstation_phones = db.query(
+            Phone).filter_by(workstation_id=workstation_id).all()
+        for p in workstation_phones:
+            db.delete(p)
         workstation.active = False
         db.add(workstation)
         db.commit()
@@ -200,6 +208,13 @@ async def put_workstation(
     try:
         if data.name:
             data.name = data.name.strip()
+        if data.phone:
+            workstation_phones = db.query(
+                Phone).filter_by(workstation_id=workstation_id).all()
+            for p in workstation_phones:
+                db.delete(p)
+            db.commit()
+            data.phone = [Phone(**p) for p in data.phone]
         if not data.regional and not data.regional_id:
             return JSONResponse(
                 content={
@@ -209,6 +224,7 @@ async def put_workstation(
                 },
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
+
         if not db.query(City).filter_by(id=data.city_id).one_or_none():
             return JSONResponse(
                 content={
@@ -218,11 +234,9 @@ async def put_workstation(
                 },
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
-        if (
-            not db.query(Workstation)
-            .filter_by(id=workstation_id)
-            .one_or_none()
-        ):
+        workstation = db.query(Workstation).filter_by(
+            id=workstation_id).one_or_none()
+        if not workstation:
             return JSONResponse(
                 content={
                     "message": f"O Posto de Trabalho de id = {workstation_id} não está cadastrado.",  # noqa E501
@@ -231,7 +245,9 @@ async def put_workstation(
                 },
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
-        db.query(Workstation).filter_by(id=workstation_id).update(data.dict())
+        print(data)
+        workstation = (
+            db.query(Workstation).filter_by(id=workstation_id).update(values=data))
         db.commit()
         response_data = jsonable_encoder(
             {
