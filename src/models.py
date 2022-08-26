@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 
 from database import Base
 
@@ -21,7 +21,8 @@ class Workstation(Base):
     city_id = Column(Integer, ForeignKey("city.id"), nullable=False)
     regional_id = Column(Integer, ForeignKey("workstation.id"), nullable=True)
     active = Column(Boolean, nullable=False, default=True)
-    phone = relationship("Phone", back_populates="workstation")
+    phones = relationship("Phone", backref=backref(
+        "workstation", cascade="all"))
 
 
 class Phone(Base):
@@ -30,4 +31,4 @@ class Phone(Base):
     workstation_id = Column("workstation_id", Integer,
                             ForeignKey("workstation.id"))
     number = Column("number", String(250), nullable=False)
-    workstation = relationship("Workstation", back_populates="phone")
+    # workstation = relationship("Workstation", , back_populates="phones")

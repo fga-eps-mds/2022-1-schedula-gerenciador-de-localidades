@@ -32,6 +32,7 @@ CREATE TABLE "public"."phone" (
     number VARCHAR(250) NOT NULL,
     CONSTRAINT "phone_pk" PRIMARY KEY (id),
     CONSTRAINT "phone_workstation_id_fkey" FOREIGN KEY (workstation_id)
-    REFERENCES "public"."workstation" (id)
-    ON DELETE CASCADE
+        REFERENCES "public"."workstation" (id)
+            ON DELETE CASCADE 
+            ON UPDATE CASCADE
 );

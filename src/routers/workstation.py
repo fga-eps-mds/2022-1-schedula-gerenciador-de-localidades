@@ -24,7 +24,7 @@ class WorkstationModel(BaseModel):
     city_id: int
     regional_id: int | None = None
     active: bool = True
-    phone: List[Dict[str, str]] | None = None
+    phones: List[Dict[str, str]] | None = None
 
     class Config:
         schema_extra = {
@@ -35,7 +35,7 @@ class WorkstationModel(BaseModel):
                 "ip": "10.11.1.1",
                 "regional": True,
                 "city_id": 1,
-                "phone": [{"number": "48946513"}, {"number": "161651561"}]
+                "phones": [{"number": "48946513"}, {"number": "161651561"}]
             }
         }
 
@@ -67,8 +67,9 @@ async def post_workstation(
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
-        data.phone = [Phone(**p) for p in data.phone]
+        data.phones = [Phone(**p) for p in data.phones]
         new_object = Workstation(**data.dict())
+        # new_object.phones = [Phone(**p) for p in data.phones]
         db.add(new_object)
         db.commit()
         db.refresh(new_object)
@@ -106,7 +107,7 @@ async def get_workstation(
                 .filter(Workstation.id == id)
                 .one_or_none()
             )
-            workstation.phone = db.query(Phone).filter_by(
+            workstation.phones = db.query(Phone).filter_by(
                 workstation_id=id).all()
             if workstation is None:
                 return JSONResponse(
@@ -208,13 +209,25 @@ async def put_workstation(
     try:
         if data.name:
             data.name = data.name.strip()
-        if data.phone:
-            workstation_phones = db.query(
-                Phone).filter_by(workstation_id=workstation_id).all()
-            for p in workstation_phones:
+        if data.phones:
+            # Delete old phones
+            for p in db.query(Phone).filter_by(workstation_id=workstation_id).all():
                 db.delete(p)
             db.commit()
-            data.phone = [Phone(**p) for p in data.phone]
+
+            # print(data.phones)
+            # phones = []
+            # for p in data.phones:
+            #     phones.append(Phone(
+            #         number=p['number'], workstation_id=workstation_id))
+            # # data.phones = [PhoneModel(**p) for p in data.phones]
+            # print(phones)
+            # for p in phones:
+            #     print(p)
+            #     p.workstation_id = workstation_id
+            #     db.add(p)
+            # db.commit()
+
         if not data.regional and not data.regional_id:
             return JSONResponse(
                 content={
