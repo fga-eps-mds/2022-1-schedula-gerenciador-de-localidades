@@ -69,7 +69,6 @@ async def post_workstation(
 
         data.phones = [Phone(**p) for p in data.phones]
         new_object = Workstation(**data.dict())
-        # new_object.phones = [Phone(**p) for p in data.phones]
         db.add(new_object)
         db.commit()
         db.refresh(new_object)
@@ -130,6 +129,9 @@ async def get_workstation(
                 )
         else:
             all_data = db.query(Workstation).filter_by(active=True).all()
+            for d in all_data:
+                d.phones = db.query(Phone).filter_by(
+                    workstation_id=d.id).all()
             all_data_json = jsonable_encoder(all_data)
             return JSONResponse(
                 status_code=status.HTTP_200_OK,
@@ -210,23 +212,7 @@ async def put_workstation(
         if data.name:
             data.name = data.name.strip()
         if data.phones:
-            # Delete old phones
-            for p in db.query(Phone).filter_by(workstation_id=workstation_id).all():
-                db.delete(p)
-            db.commit()
-
-            # print(data.phones)
-            # phones = []
-            # for p in data.phones:
-            #     phones.append(Phone(
-            #         number=p['number'], workstation_id=workstation_id))
-            # # data.phones = [PhoneModel(**p) for p in data.phones]
-            # print(phones)
-            # for p in phones:
-            #     print(p)
-            #     p.workstation_id = workstation_id
-            #     db.add(p)
-            # db.commit()
+            data.phones = [Phone(**p) for p in data.phones]
 
         if not data.regional and not data.regional_id:
             return JSONResponse(
@@ -260,13 +246,13 @@ async def put_workstation(
             )
         print(data)
         workstation = (
-            db.query(Workstation).filter_by(id=workstation_id).update(values=data))
+            db.query(Workstation).filter_by(id=workstation_id).update(values=data.dict()))
         db.commit()
         response_data = jsonable_encoder(
             {
                 "message": "Dado atualizado com sucesso",
                 "error": None,
-                "data": jsonable_encoder(data),
+                "data": jsonable_encoder(workstation),
             }
         )
         return JSONResponse(

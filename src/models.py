@@ -22,7 +22,7 @@ class Workstation(Base):
     regional_id = Column(Integer, ForeignKey("workstation.id"), nullable=True)
     active = Column(Boolean, nullable=False, default=True)
     phones = relationship("Phone", backref=backref(
-        "workstation", cascade="all"))
+        "workstation", cascade="save-update"))
 
 
 class Phone(Base):
