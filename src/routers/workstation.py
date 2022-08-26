@@ -94,7 +94,6 @@ async def post_workstation(
         )
 
 
-# @TODO: incluir filtro de workstation, listar todos
 @router.get("/workstation", tags=["Workstation"])
 async def get_workstation(
     id: Union[int, None] = None, db: Session = Depends(get_db)
@@ -103,11 +102,10 @@ async def get_workstation(
         if id:
             workstation = (
                 db.query(Workstation)
-                .filter(Workstation.id == id)
+                .filter(Workstation.id == id, Workstation.active == True)
                 .one_or_none()
             )
-            workstation.phones = db.query(Phone).filter_by(
-                workstation_id=id).all()
+
             if workstation is None:
                 return JSONResponse(
                     status_code=status.HTTP_200_OK,
@@ -118,6 +116,8 @@ async def get_workstation(
                     },
                 )
             else:
+                workstation.phones = db.query(Phone).filter_by(
+                    workstation_id=id).all()
                 workstation = jsonable_encoder(workstation)
                 return JSONResponse(
                     status_code=status.HTTP_200_OK,
@@ -161,8 +161,9 @@ async def delete_workstation(
     workstation_id: int, db: Session = Depends(get_db)
 ):
     try:
-        workstation: WorkstationModel = db.query(Workstation).filter_by(
-            id=workstation_id
+
+        workstation: WorkstationModel = db.query(Workstation).filter(
+            Workstation.id == workstation_id, Workstation.active == True
         ).one_or_none()
 
         if not workstation:
@@ -174,10 +175,7 @@ async def delete_workstation(
                 },
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
-        workstation_phones = db.query(
-            Phone).filter_by(workstation_id=workstation_id).all()
-        for p in workstation_phones:
-            db.delete(p)
+        db.query(Phone).filter_by(workstation_id=workstation_id).delete()
         workstation.active = False
         db.add(workstation)
         db.commit()
@@ -234,7 +232,7 @@ async def put_workstation(
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
         workstation = db.query(Workstation).filter_by(
-            id=workstation_id).one_or_none()
+            id=workstation_id, active=True).one_or_none()
         if not workstation:
             return JSONResponse(
                 content={
@@ -246,7 +244,7 @@ async def put_workstation(
             )
         print(data)
         workstation = (
-            db.query(Workstation).filter_by(id=workstation_id).update(values=data.dict()))
+            db.query(Workstation).filter_by(id=workstation_id, active=True).update(values=data.dict()))
         db.commit()
         response_data = jsonable_encoder(
             {
