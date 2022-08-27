@@ -94,11 +94,40 @@ async def post_workstation(
         )
 
 
+@router.get("/regional", tags=["Workstation"])
+async def get_regional(db: Session = Depends(get_db)):
+    try:
+
+        all_data = db.query(Workstation).filter(
+            Workstation.active == True, Workstation.regional == True).all()
+        for d in all_data:
+            d.phones = db.query(Phone).filter_by(
+                workstation_id=d.id).all()
+        all_data_json = jsonable_encoder(all_data)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "message": "dados buscados com sucesso",
+                "error": None,
+                "data": all_data_json,
+            },
+        )
+
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "message": "Erro ao obter dados",
+                "error": str(e),
+                "data": None,
+            },
+        )
+
+
 @router.get("/workstation", tags=["Workstation"])
 async def get_workstation(
     id: Union[int, None] = None,
-    db: Session = Depends(get_db),
-    regional: Union[bool, None] = None
+    db: Session = Depends(get_db)
 ):
     try:
         if id:
@@ -129,10 +158,6 @@ async def get_workstation(
                         "data": workstation,
                     },
                 )
-
-        elif not regional == None:
-            all_data = db.query(Workstation).filter(
-                Workstation.active == True, Workstation.regional == regional).all()
         else:
             all_data = db.query(Workstation).filter_by(active=True).all()
         for d in all_data:
