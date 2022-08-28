@@ -99,7 +99,7 @@ async def get_regional(db: Session = Depends(get_db)):
     try:
 
         all_data = db.query(Workstation).filter(
-            Workstation.active == True, Workstation.regional == True).all()
+            Workstation.active == True, Workstation.regional == True).all() # noqa E712
         for d in all_data:
             d.phones = db.query(Phone).filter_by(
                 workstation_id=d.id).all()
@@ -133,7 +133,7 @@ async def get_workstation(
         if id:
             workstation = (
                 db.query(Workstation)
-                .filter(Workstation.id == id, Workstation.active == True)
+                .filter(Workstation.id == id, Workstation.active == True) # noqa E712
                 .one_or_none()
             )
 
@@ -159,7 +159,7 @@ async def get_workstation(
                     },
                 )
         else:
-            all_data = db.query(Workstation).filter_by(active=True).all()
+            all_data = db.query(Workstation).filter_by(active=True).all() # noqa E712
         for d in all_data:
             d.phones = db.query(Phone).filter_by(
                 workstation_id=d.id).all()
@@ -194,7 +194,7 @@ async def delete_workstation(
     try:
 
         workstation: WorkstationModel = db.query(Workstation).filter(
-            Workstation.id == workstation_id, Workstation.active == True
+            Workstation.id == workstation_id, Workstation.active == True # noqa E712
         ).one_or_none()
 
         if not workstation:
@@ -237,13 +237,13 @@ async def put_workstation(data: WorkstationModel,
                           db: Session = Depends(get_db),
                           id: int = Path(title="Workstation id")):
     if data.city_id:
-        if not db.query(City).filter(City.id == data.city_id).one_or_none():
+        if not db.query(City).filter(City.id == data.city_id).one_or_none():  # noqa 501
             return JSONResponse(
-            content={
-                "message": f"A cidade de id = {data.city_id} não está cadastrada.",  # noqa E501
-                "error": True,
-                "data": None,
-            }, status_code=status.HTTP_200_OK)
+                content={
+                    "message": f"A cidade de id = {data.city_id} não está cadastrada.",  # noqa E501
+                    "error": True,
+                    "data": None,
+                }, status_code=status.HTTP_200_OK)
     phones = []
     if data.phones is not None and len(data.phones) > 0:
         db.query(Phone).filter(Phone.workstation_id == id).delete()
@@ -257,7 +257,7 @@ async def put_workstation(data: WorkstationModel,
     if not data.regional and not data.regional_id:
         return JSONResponse(
             content={
-                "message": "Caso o posto de trabalho não seja regional, forneça o a regional à qual ele pertence.",
+                "message": "Caso o posto de trabalho não seja regional, forneça o a regional à qual ele pertence.",  # noqa 501
                 "error": True,
                 "data": None,
             },
@@ -274,7 +274,7 @@ async def put_workstation(data: WorkstationModel,
         )
     try:
         workstation = db.query(Workstation).filter(
-            Workstation.id == id, Workstation.active == True).update(data.dict(exclude_none=True))
+            Workstation.id == id, Workstation.active == True).update(data.dict(exclude_none=True)) # noqa E501 E712
         if workstation:
             db.commit()
             workstation = jsonable_encoder(
