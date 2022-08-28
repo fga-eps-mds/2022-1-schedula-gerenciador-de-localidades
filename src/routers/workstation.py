@@ -17,7 +17,7 @@ Base.metadata.create_all(bind=engine)
 
 class WorkstationModel(BaseModel):
     name: str
-    asdl_vpn: bool = False
+    adsl_vpn: bool = False
     link: str | None = None
     ip: str | None = None
     regional: bool = False
@@ -30,7 +30,7 @@ class WorkstationModel(BaseModel):
         schema_extra = {
             "example": {
                 "name": "2ª DRP - Aparecida",
-                "asdl_vpn": True,
+                "adsl_vpn": True,
                 "link": "7ª DP  Aparecida",
                 "ip": "10.11.1.1",
                 "regional": True,
@@ -66,8 +66,10 @@ async def post_workstation(
                 },
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
-
-        data.phones = [Phone(**p) for p in data.phones]
+        if data.phones:
+            data.phones = [Phone(**p) for p in data.phones]
+        else:
+            data.phones
         new_object = Workstation(**data.dict())
         db.add(new_object)
         db.commit()
@@ -244,11 +246,14 @@ async def put_workstation(data: WorkstationModel,
                 "error": True,
                 "data": None,
             }, status_code=status.HTTP_400_BAD_REQUEST)
-
+    phones = []
     if data.phones:
-        data.phones = [Phone(**p) for p in data.phones]
         db.query(Phone).filter(Phone.workstation_id == id).delete()
-        # @TODO: inserir telefones no banco 
+        for p in data.phones:
+            p['workstation_id'] = id
+            db.add(Phone(**p))
+            phones.append(Phone(**p))
+        db.commit()
         data.phones = None
 
     try:
@@ -258,6 +263,7 @@ async def put_workstation(data: WorkstationModel,
             db.commit()
             workstation = jsonable_encoder(
                 db.query(Workstation).filter(Workstation.id == id).first())
+            workstation['phones'] = jsonable_encoder(phones)
 
         return JSONResponse(
             content={
