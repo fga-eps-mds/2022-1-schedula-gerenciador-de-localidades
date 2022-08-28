@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import backref, relationship
 
 from database import Base
 
@@ -31,4 +31,3 @@ class Phone(Base):
     workstation_id = Column("workstation_id", Integer,
                             ForeignKey("workstation.id"))
     number = Column("number", String(250), nullable=False)
-    # workstation = relationship("Workstation", , back_populates="phones")
