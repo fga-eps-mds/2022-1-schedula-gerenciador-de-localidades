@@ -1,6 +1,6 @@
 from typing import Dict, List, Union
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Path
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -230,69 +230,48 @@ async def delete_workstation(
 
 
 @router.put(
-    "/workstation/{workstation_id}",
-    tags=["Workstation"],
-    response_model=WorkstationModel,
+    "/workstation/{id}",
+    tags=["Workstation"]
 )
-async def put_workstation(
-    workstation_id: int, data: WorkstationModel, db: Session = Depends(get_db)
-):
+async def put_workstation(data: WorkstationModel,
+                          db: Session = Depends(get_db),
+                          id: int = Path(title="Workstation id")):
+    if data.city_id:
+        if not db.query(City).filter(City.id == data.city_id).one_or_none():
+            return JSONResponse(
+            content={
+                "message": f"A cidade de id = {data.city_id} não está cadastrada.",  # noqa E501
+                "error": True,
+                "data": None,
+            }, status_code=status.HTTP_400_BAD_REQUEST)
+
+    if data.phones:
+        data.phones = [Phone(**p) for p in data.phones]
+        db.query(Phone).filter(Phone.workstation_id == id).delete()
+        # @TODO: inserir telefones no banco 
+        data.phones = None
+
     try:
-        if data.name:
-            data.name = data.name.strip()
-        if data.phones:
-            data.phones = [Phone(**p) for p in data.phones]
+        workstation = db.query(Workstation).filter(
+            Workstation.id == id, Workstation.active == True).update(data.dict(exclude_none=True))
+        if workstation:
+            db.commit()
+            workstation = jsonable_encoder(
+                db.query(Workstation).filter(Workstation.id == id).first())
 
-        if not data.regional and not data.regional_id:
-            return JSONResponse(
-                content={
-                    "message": "Caso o posto de trabalho não seja regional, forneça o a regional à qual ele pertence.",  # noqa E501
-                    "error": True,
-                    "data": None,
-                },
-                status_code=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if not db.query(City).filter_by(id=data.city_id).one_or_none():
-            return JSONResponse(
-                content={
-                    "message": f"A cidade de id = {data.city_id} não está cadastrada.",  # noqa E501
-                    "error": True,
-                    "data": None,
-                },
-                status_code=status.HTTP_400_BAD_REQUEST,
-            )
-        workstation = db.query(Workstation).filter_by(
-            id=workstation_id, active=True).one_or_none()
-        if not workstation:
-            return JSONResponse(
-                content={
-                    "message": f"O Posto de Trabalho de id = {workstation_id} não está cadastrado.",  # noqa E501
-                    "error": True,
-                    "data": None,
-                },
-                status_code=status.HTTP_400_BAD_REQUEST,
-            )
-        print(data)
-        workstation = (
-            db.query(Workstation).filter_by(id=workstation_id, active=True).update(values=data.dict()))
-        db.commit()
-        response_data = jsonable_encoder(
-            {
-                "message": "Dado atualizado com sucesso",
-                "error": None,
-                "data": jsonable_encoder(workstation),
-            }
-        )
         return JSONResponse(
-            content=response_data, status_code=status.HTTP_200_OK
+            content={
+                "message": f"Dados alterados com sucesso",  # noqa E501
+                "error": False,
+                "data": workstation,
+            },
+            status_code=status.HTTP_200_OK,
         )
+
     except Exception as e:
         return JSONResponse(
             content={
                 "message": "Erro ao processar dados",
                 "error": str(e),
                 "data": None,
-            },
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
+            }, status_code=status.HTTP_400_BAD_REQUEST)
