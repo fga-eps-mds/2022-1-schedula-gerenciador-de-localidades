@@ -37,6 +37,10 @@ def session():
         session.execute(f.read())
         session.commit()
 
+    with open("./tests/data/insert_phone.sql", "r") as f:
+        session.execute(f.read())
+        session.commit()
+
     yield session
     os.remove("test.db")
 

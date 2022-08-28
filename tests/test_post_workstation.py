@@ -2,13 +2,14 @@ def test_post_workstation(client):
     response = client.post(
         "/workstation",
         json={
-            "name": "2ª DRP - Aparecida",
+            "name": "Posto 1",
             "adsl_vpn": True,
             "link": "7ª DP  Aparecida",
             "ip": "10.11.1.1",
             "regional": True,
             "city_id": 1,
-        },
+            "phones": [{"number": "48946513"}, {"number": "161651561"}]
+        }
     )
     assert response.status_code == 201
 

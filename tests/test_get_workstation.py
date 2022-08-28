@@ -4,7 +4,7 @@ def test_get_workstation(client):
     assert response.status_code == 200
 
 
-def test_get_workstationid(client):
+def test_get_workstation_id(client):
     url = "/workstation?id=1"
     response = client.get(url)
     assert response.status_code == 200
@@ -17,7 +17,14 @@ def test_get_workstationid(client):
         "adsl_vpn": True,
         "regional": True,
         "regional_id": None,
-        "active": False,
+        "active": True,
+        "phones": [
+            {
+                "id": 1,
+                "number": "16549841",
+                "workstation_id": 1
+            }
+        ]
     }
 
 

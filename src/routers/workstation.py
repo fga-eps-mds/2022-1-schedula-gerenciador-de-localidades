@@ -68,8 +68,6 @@ async def post_workstation(
             )
         if data.phones:
             data.phones = [Phone(**p) for p in data.phones]
-        else:
-            data.phones
         new_object = Workstation(**data.dict())
         db.add(new_object)
         db.commit()
@@ -204,9 +202,9 @@ async def delete_workstation(
                 content={
                     "message": f"Nenhum posto de trabalho com id = {workstation_id} encontrado.",  # noqa E501
                     "error": True,
-                    "data": None,
+                    "data": None
                 },
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=status.HTTP_200_OK,
             )
         db.query(Phone).filter_by(workstation_id=workstation_id).delete()
         workstation.active = False
@@ -245,7 +243,7 @@ async def put_workstation(data: WorkstationModel,
                 "message": f"A cidade de id = {data.city_id} não está cadastrada.",  # noqa E501
                 "error": True,
                 "data": None,
-            }, status_code=status.HTTP_400_BAD_REQUEST)
+            }, status_code=status.HTTP_200_OK)
     phones = []
     if data.phones:
         db.query(Phone).filter(Phone.workstation_id == id).delete()
@@ -256,6 +254,24 @@ async def put_workstation(data: WorkstationModel,
         db.commit()
         data.phones = None
 
+    if not data.regional and not data.regional_id:
+        return JSONResponse(
+            content={
+                "message": "Caso o posto de trabalho não seja regional, forneça o a regional à qual ele pertence.",
+                "error": True,
+                "data": None,
+            },
+            status_code=status.HTTP_200_OK,
+        )
+    if not db.query(City).filter_by(id=data.city_id).one_or_none():
+        return JSONResponse(
+            content={
+                "message": f"A cidade de id {data.city_id} não está cadastrada.",  # noqa E501
+                "error": True,
+                "data": None,
+            },
+            status_code=status.HTTP_200_OK,
+        )
     try:
         workstation = db.query(Workstation).filter(
             Workstation.id == id, Workstation.active == True).update(data.dict(exclude_none=True))
@@ -265,14 +281,23 @@ async def put_workstation(data: WorkstationModel,
                 db.query(Workstation).filter(Workstation.id == id).first())
             workstation['phones'] = jsonable_encoder(phones)
 
-        return JSONResponse(
-            content={
-                "message": f"Dados alterados com sucesso",  # noqa E501
-                "error": False,
-                "data": workstation,
-            },
-            status_code=status.HTTP_200_OK,
-        )
+            return JSONResponse(
+                content={
+                    "message": "Dados alterados com sucesso",  # noqa E501
+                    "error": False,
+                    "data": workstation,
+                },
+                status_code=status.HTTP_200_OK,
+            )
+        else:
+            return JSONResponse(
+                content={
+                    "message": f"O Posto de Trabalho de id = {id} não está cadastrado.",  # noqa E501
+                    "error": True,
+                    "data": workstation,
+                },
+                status_code=status.HTTP_200_OK,
+            )
 
     except Exception as e:
         return JSONResponse(
@@ -280,4 +305,4 @@ async def put_workstation(data: WorkstationModel,
                 "message": "Erro ao processar dados",
                 "error": str(e),
                 "data": None,
-            }, status_code=status.HTTP_400_BAD_REQUEST)
+            }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
