@@ -245,14 +245,14 @@ async def put_workstation(data: WorkstationModel,
                 "data": None,
             }, status_code=status.HTTP_200_OK)
     phones = []
-    if data.phones:
+    if data.phones is not None and len(data.phones) > 0:
         db.query(Phone).filter(Phone.workstation_id == id).delete()
         for p in data.phones:
             p['workstation_id'] = id
             db.add(Phone(**p))
             phones.append(Phone(**p))
         db.commit()
-        data.phones = None
+    data.phones = None
 
     if not data.regional and not data.regional_id:
         return JSONResponse(
