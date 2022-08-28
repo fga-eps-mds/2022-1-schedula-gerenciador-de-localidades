@@ -3,7 +3,7 @@ def test_post_workstation(client):
         "/workstation",
         json={
             "name": "2ª DRP - Aparecida",
-            "asdl_vpn": True,
+            "adsl_vpn": True,
             "link": "7ª DP  Aparecida",
             "ip": "10.11.1.1",
             "regional": True,
@@ -18,7 +18,7 @@ def test_post_city_error(client):
         "/workstation",
         json={
             "name": "2ª DRP - Aparecida",
-            "asdl_vpn": True,
+            "adsl_vpn": True,
             "link": "7ª DP  Aparecida",
             "ip": "10.11.1.1",
             "regional": True,
@@ -33,7 +33,7 @@ def test_post_regional_error(client):
         "/workstation",
         json={
             "name": "2ª DRP - Aparecida",
-            "asdl_vpn": True,
+            "adsl_vpn": True,
             "link": "7ª DP  Aparecida",
             "ip": "10.11.1.1",
             "regional": False,

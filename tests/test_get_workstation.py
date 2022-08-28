@@ -14,7 +14,7 @@ def test_get_workstationid(client):
         "name": "1ª DP de Goiânia",
         "ip": "127.0.0.0",
         "link": "exemplo de link",
-        "asdl_vpn": True,
+        "adsl_vpn": True,
         "regional": True,
         "regional_id": None,
         "active": False,

@@ -13,7 +13,7 @@ CREATE TABLE "public"."workstation" (
     city_id INTEGER NOT NULL,
     ip VARCHAR(250),
     link VARCHAR(250),
-    asdl_vpn BOOLEAN NOT NULL DEFAULT FALSE,
+    adsl_vpn BOOLEAN NOT NULL DEFAULT FALSE,
     regional BOOLEAN NOT NULL DEFAULT FALSE,
     active BOOLEAN NOT NULL DEFAULT TRUE,
     regional_id INTEGER,
