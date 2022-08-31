@@ -24,7 +24,7 @@ class WorkstationModel(BaseModel):
     city_id: int
     regional_id: int | None = None
     active: bool = True
-    phones: List[Dict[str, str]] | None = None
+    phones: List[str] | None = None
 
     class Config:
         schema_extra = {
@@ -35,7 +35,7 @@ class WorkstationModel(BaseModel):
                 "ip": "10.11.1.1",
                 "regional": True,
                 "city_id": 1,
-                "phones": [{"number": "48946513"}, {"number": "161651561"}]
+                "phones": ["48946513", "161651561"]
             }
         }
 
@@ -67,7 +67,7 @@ async def post_workstation(
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
         if data.phones:
-            data.phones = [Phone(**p) for p in data.phones]
+            data.phones = [Phone(number=p) for p in data.phones]
         new_object = Workstation(**data.dict())
         db.add(new_object)
         db.commit()
@@ -194,7 +194,7 @@ async def delete_workstation(
     try:
 
         workstation: WorkstationModel = db.query(Workstation).filter(
-            Workstation.id == workstation_id, Workstation.active == True # noqa E712
+            Workstation.id == workstation_id, Workstation.active
         ).one_or_none()
 
         if not workstation:
@@ -206,7 +206,6 @@ async def delete_workstation(
                 },
                 status_code=status.HTTP_200_OK,
             )
-        db.query(Phone).filter_by(workstation_id=workstation_id).delete()
         workstation.active = False
         db.add(workstation)
         db.commit()
@@ -248,9 +247,9 @@ async def put_workstation(data: WorkstationModel,
     if data.phones is not None and len(data.phones) > 0:
         db.query(Phone).filter(Phone.workstation_id == id).delete()
         for p in data.phones:
-            p['workstation_id'] = id
-            db.add(Phone(**p))
-            phones.append(Phone(**p))
+            new_phone = Phone(number=p, workstation_id=id )
+            db.add(new_phone)
+            phones.append(new_phone)
         db.commit()
     data.phones = None
 
