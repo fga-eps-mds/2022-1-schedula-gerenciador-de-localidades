@@ -8,6 +8,7 @@ def test_post_workstation(client):
             "ip": "10.11.1.1",
             "regional": True,
             "city_id": 1,
+            "phones": ["(61) 99999-9999", "(61) 99989-9999"],
         },
     )
     assert response.status_code == 201
