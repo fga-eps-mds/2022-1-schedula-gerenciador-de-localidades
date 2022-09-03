@@ -4,6 +4,13 @@ def test_get_workstation(client):
     assert response.status_code == 200
 
 
+def test_get_workstation_by_regional(client):
+    url = "/workstation?regional=True"
+    response = client.get(url)
+    assert response.status_code == 200
+    assert len(response.json()["data"]) == 2
+
+
 def test_get_workstationid(client):
     url = "/workstation?id=1"
     response = client.get(url)
@@ -18,6 +25,7 @@ def test_get_workstationid(client):
         "regional": True,
         "regional_id": None,
         "active": False,
+        "phones": [],
     }
 
 

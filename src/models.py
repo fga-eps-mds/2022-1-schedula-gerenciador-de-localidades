@@ -25,6 +25,6 @@ class Workstation(Base):
 phone = Table(
     "phone",
     Base.metadata,
-    Column("id_workstation", Integer, ForeignKey("workstation.id")),
-    Column("phone", String(250), nullable=False),
+    Column("workstation_id", Integer, ForeignKey("workstation.id")),
+    Column("number", String(20), nullable=False),
 )

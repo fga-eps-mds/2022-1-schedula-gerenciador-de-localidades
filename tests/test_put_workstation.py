@@ -9,6 +9,7 @@ def test_put_workstation(client: TestClient):
             "asdl_vpn": True,
             "regional": True,
             "city_id": 1,
+            "phones": ["(61) 99999-9999"],
         },
     )
 
@@ -39,7 +40,7 @@ def test_put_non_existing_workstation(client: TestClient):
 
     assert (
         response.json()["message"]
-        == "O Posto de Trabalho de id = 90 não está cadastrado."
+        == "O Posto de Trabalho não está cadastrado."
     )
     assert response.status_code == 400
 
@@ -56,7 +57,7 @@ def test_put_workstation_without_regional(client: TestClient):
     )
     assert (
         response.json()["message"]
-        == "Caso o posto de trabalho não seja regional, forneça o a regional à qual ele pertence."  # noqa E501
+        == "Caso o posto de trabalho não seja regional, forneça a regional à qual ele pertence."  # noqa E501
     )
     assert response.status_code == 400
 
@@ -71,10 +72,7 @@ def test_put_workstation_with_non_existing_city(client: TestClient):
             "city_id": 50,
         },
     )
-    assert (
-        response.json()["message"]
-        == "A cidade de id = 50 não está cadastrada."
-    )
+    assert response.json()["message"] == "A cidade não está cadastrada."
     assert response.status_code == 400
 
 
