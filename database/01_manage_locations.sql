@@ -32,7 +32,7 @@ CREATE TABLE "public"."workstation" (
 
 CREATE TABLE "public"."phone" (
     workstation_id INTEGER NOT NULL,
-    number VARCHAR(250) NOT NULL,
+    number VARCHAR(20) NOT NULL,
     CONSTRAINT "phone_workstation_id_fkey" FOREIGN KEY (workstation_id) 
     REFERENCES "public"."workstation" (id) 
     ON DELETE CASCADE
