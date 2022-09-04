@@ -6,7 +6,7 @@ def test_put_workstation(client: TestClient):
         "workstation/1",
         json={
             "name": "teste",
-            "asdl_vpn": True,
+            "adsl_vpn": True,
             "regional": True,
             "city_id": 1,
             "phones": ["(61) 99999-9999"],
@@ -19,7 +19,7 @@ def test_put_workstation(client: TestClient):
     # verify = client.get("workstation/1")
     # assert verify.json()["data"] == {
     #     "name": "teste",
-    #     "asdl_vpn": true,
+    #     "adsl_vpn": true,
     #     "link": "teste",
     #     "ip": "10.11.1.1",
     #     "regional": true,
@@ -32,7 +32,7 @@ def test_put_non_existing_workstation(client: TestClient):
         "workstation/90",
         json={
             "name": "teste",
-            "asdl_vpn": True,
+            "adsl_vpn": True,
             "regional": True,
             "city_id": 1,
         },
@@ -50,7 +50,7 @@ def test_put_workstation_without_regional(client: TestClient):
         "workstation/1",
         json={
             "name": "teste",
-            "asdl_vpn": True,
+            "adsl_vpn": True,
             "regional": False,
             "city_id": 1,
         },
@@ -67,7 +67,7 @@ def test_put_workstation_with_non_existing_city(client: TestClient):
         "workstation/1",
         json={
             "name": "teste",
-            "asdl_vpn": True,
+            "adsl_vpn": True,
             "regional": True,
             "city_id": 50,
         },
@@ -81,7 +81,7 @@ def teste_workstation_duplicity(client: TestClient):
         "workstation/1",
         json={
             "name": "3ª DP de Luziânia",
-            "asdl_vpn": True,
+            "adsl_vpn": True,
             "regional": True,
             "city_id": 5,
         },
