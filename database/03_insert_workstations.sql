@@ -1,6 +1,6 @@
 \c gerenciador_de_localidades
 
-INSERT INTO workstation (name, city_id, ip, link, asdl_vpn, regional, active, regional_id) VALUES 
+INSERT INTO workstation (name, city_id, ip, link, adsl_vpn, regional, active, regional_id) VALUES 
 ('1ªDRP', 1, '10.0.38.1', NULL, 'f', 't', 't', NULL),
 ('1ªDRP - Patio', 1, '10.11.35.1', NULL, 'f', 'f', 't', 1),
 ('2ªDP', 1, '10.0.66.1', NULL, 'f', 'f', 't', 1),

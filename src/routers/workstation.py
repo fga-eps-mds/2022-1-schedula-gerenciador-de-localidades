@@ -16,7 +16,7 @@ router = APIRouter()
 
 class WorkstationModel(BaseModel):
     name: str
-    asdl_vpn: bool = False
+    adsl_vpn: bool = False
     link: str | None = None
     ip: str | None = None
     regional: bool = False
@@ -29,7 +29,7 @@ class WorkstationModel(BaseModel):
         schema_extra = {
             "example": {
                 "name": "2ª DRP - Aparecida",
-                "asdl_vpn": True,
+                "adsl_vpn": True,
                 "link": "7ª DP  Aparecida",
                 "ip": "10.11.1.1",
                 "regional": True,
