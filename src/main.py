@@ -31,16 +31,18 @@ async def process_request_headers(request: Request, call_next):
     method = str(request.method)
     url = str(request.url)
 
-    if 'workstation' in url or 'cidades' in url:
-        if method == 'DELETE':
-            if auth != 'admin':
-                return response_unauthorized
-        if method == 'PUT'or method == 'POST':
-            if auth not in ['admin','manager']:
-                return response_unauthorized
-        if method =='GET':
-            if auth not in ['admin','manager','basic','public']:
-                return response_unauthorized
+    if method == 'DELETE':
+        if auth != 'admin':
+            return response_unauthorized
+    if method == 'PUT':
+        if auth not in ['admin','manager']:
+            return response_unauthorized
+    if method=='POST':
+        if auth not in ['admin','manager']:
+            return response_unauthorized
+    if method =='GET':
+        if auth not in ['admin','manager','basic','public']:
+            return response_unauthorized
     return await call_next(request)
 
 app.include_router(workstation.router)
