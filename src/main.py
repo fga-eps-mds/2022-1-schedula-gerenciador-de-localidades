@@ -1,14 +1,15 @@
-import time
 import os
+import time
 from typing import Any, List, Union
 
-from passlib.context import CryptContext
 from fastapi import FastAPI, Request, status
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from utils.auth_utils import get_authorization
+from fastapi.responses import JSONResponse
+from passlib.context import CryptContext
+
 from routers import city, workstation
-                 
+from utils.auth_utils import get_authorization
+
 app = FastAPI()
 
 app.add_middleware(
@@ -25,6 +26,7 @@ response_unauthorized = JSONResponse({
     "data": None,
 }, status.HTTP_401_UNAUTHORIZED)
 
+
 @app.middleware("http")
 async def process_request_headers(request: Request, call_next):
     auth = str(get_authorization(request))
@@ -37,27 +39,30 @@ async def process_request_headers(request: Request, call_next):
                 return response_unauthorized
     if method == 'PUT':
         if 'workstation' in url or 'cidades' in url:
-            if auth not in ['admin','manager']:
+            if auth not in ['admin', 'manager']:
                 return response_unauthorized
-    if method=='POST':
+    if method == 'POST':
         if 'workstation' in url or 'cidades' in url:
-            if auth not in ['admin','manager']:
+            if auth not in ['admin', 'manager']:
                 return response_unauthorized
-    if method =='GET':
+    if method == 'GET':
         if 'workstation' in url or 'cidades' in url:
-            if auth not in ['admin','manager','basic','public']:
+            if auth not in ['admin', 'manager', 'basic', 'public']:
                 return response_unauthorized
+
     return await call_next(request)
 
 app.include_router(workstation.router)
 app.include_router(city.router)
 
+
 @app.get("/")
 def root():
     return {"APP": "Gerenciador de localidades is running"}
 
+
 response_unauthorized = JSONResponse({
     "message": "Acesso negado",
     "error": True,
-    "data": None, 
+    "data": None,
 }, status.HTTP_401_UNAUTHORIZED)
