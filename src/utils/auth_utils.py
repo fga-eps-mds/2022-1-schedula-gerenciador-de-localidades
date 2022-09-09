@@ -1,10 +1,10 @@
 import os
-import jwt
 
+import jwt
 from fastapi import Request
 from requests.structures import CaseInsensitiveDict
 
-#Testing requests
+# Testing requests
 
 
 ADMIN_HEADER = CaseInsensitiveDict(
