@@ -10,15 +10,15 @@ def test_get_workstation_as_admin(client: TestClient):
     response = client.get(
         url, headers=ADMIN_HEADER)
     assert response.status_code == 200
-    assert response.json()["message"] == "Dados buscados com sucesso"
-    assert len(response.json()["data"]) == 2
+    assert response.json()["message"] == "dados buscados com sucesso"
+    assert len(response.json()["data"]) == 4
 
 
 def test_get_workstation_by_regional(client: TestClient):
     url = "/workstation?regional=True"
     response = client.get(url)
     assert response.status_code == 200
-    assert response.json()["message"] == "Dados buscados com sucesso"
+    assert response.json()["message"] == "dados buscados com sucesso"
     assert len(response.json()["data"]) == 2
 
 
@@ -43,7 +43,7 @@ def test_get_workstation_id_as_admin(client: TestClient):
 def test_workstation_id_not_found_as_admin(client: TestClient):
     response = client.get("/workstation?id=12", headers=ADMIN_HEADER)
     assert response.status_code == 200
-    assert response.json()["message"] == "Dados não encontrados"
+    assert response.json()["message"] == "dados não encontrados"
 
 # get as manager
 
@@ -53,8 +53,8 @@ def test_get_workstation_as_manager(client: TestClient):
     response = client.get(
         url, headers=MANAGER_HEADER)
     assert response.status_code == 200
-    assert response.json()["message"] == "Dados buscados com sucesso"
-    assert len(response.json()["data"]) == 2
+    assert response.json()["message"] == "dados buscados com sucesso"
+    assert len(response.json()["data"]) == 4
 
 # get as basic
 
@@ -64,8 +64,8 @@ def test_get_workstation_as_basic(client: TestClient):
     response = client.get(
         url, headers=BASIC_HEADER)
     assert response.status_code == 200
-    assert response.json()["message"] == "Dados buscados com sucesso"
-    assert len(response.json()["data"]) == 2
+    assert response.json()["message"] == "dados buscados com sucesso"
+    assert len(response.json()["data"]) == 4
 
 # get as public
 
@@ -74,5 +74,5 @@ def test_get_workstation_as_public(client: TestClient):
     url = "/workstation"
     response = client.get(url)
     assert response.status_code == 200
-    assert response.json()["message"] == "Dados buscados com sucesso"
-    assert len(response.json()["data"]) == 2
+    assert response.json()["message"] == "dados buscados com sucesso"
+    assert len(response.json()["data"]) == 4
