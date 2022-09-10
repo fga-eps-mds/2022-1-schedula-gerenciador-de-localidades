@@ -18,8 +18,8 @@ def test_get_workstation_by_regional(client: TestClient):
     url = "/workstation?regional=True"
     response = client.get(url)
     assert response.status_code == 200
-    assert response.json()["message"] == "dados buscados com sucesso"
-    assert len(response.json()["data"]) == 4
+    assert response.json()["message"] == "Dados buscados com sucesso"
+    assert len(response.json()["data"]) == 2
 
 
 def test_get_workstation_id_as_admin(client: TestClient):
@@ -43,7 +43,7 @@ def test_get_workstation_id_as_admin(client: TestClient):
 def test_workstation_id_not_found_as_admin(client: TestClient):
     response = client.get("/workstation?id=12", headers=ADMIN_HEADER)
     assert response.status_code == 200
-    assert response.json()["message"] == "dados não encontrados"
+    assert response.json()["message"] == "Dados não encontrados"
 
 # get as manager
 
