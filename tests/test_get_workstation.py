@@ -19,7 +19,7 @@ def test_get_workstation_by_regional(client: TestClient):
     response = client.get(url)
     assert response.status_code == 200
     assert response.json()["message"] == "dados buscados com sucesso"
-    assert len(response.json()["data"]) == 2
+    assert len(response.json()["data"]) == 4
 
 
 def test_get_workstation_id_as_admin(client: TestClient):
