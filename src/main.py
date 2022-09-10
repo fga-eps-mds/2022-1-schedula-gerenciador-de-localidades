@@ -34,19 +34,19 @@ async def process_request_headers(request: Request, call_next):
     url = str(request.url)
 
     if method == 'DELETE':
-        if 'workstation' in url or 'cidades' in url:
+        if 'workstation' in url or 'city' in url:
             if auth != 'admin':
                 return response_unauthorized
     if method == 'PUT':
-        if 'workstation' in url or 'cidades' in url:
+        if 'workstation' in url or 'city' in url:
             if auth not in ['admin', 'manager']:
                 return response_unauthorized
     if method == 'POST':
-        if 'workstation' in url or 'cidades' in url:
+        if 'workstation' in url or 'city' in url:
             if auth not in ['admin', 'manager']:
                 return response_unauthorized
     if method == 'GET':
-        if 'workstation' in url or 'cidades' in url:
+        if 'workstation' in url or 'city' in url:
             if auth not in ['admin', 'manager', 'basic', 'public']:
                 return response_unauthorized
 
@@ -59,10 +59,3 @@ app.include_router(city.router)
 @app.get("/")
 def root():
     return {"APP": "Gerenciador de localidades is running"}
-
-
-response_unauthorized = JSONResponse({
-    "message": "Acesso negado",
-    "error": True,
-    "data": None,
-}, status.HTTP_401_UNAUTHORIZED)
