@@ -7,7 +7,7 @@ def test_post_workstation_as_admin(client: TestClient):
     response = client.post(
         "/workstation",
         json={
-            "name": "2ª DRP - Aparecida",
+            "name": "2ª DRP - Aparecida Norte",
             "adsl_vpn": True,
             "link": "7ª DP  Aparecida",
             "ip": "10.11.1.1",
@@ -24,7 +24,7 @@ def test_post_city_error_as_admin(client: TestClient):
     response = client.post(
         "/workstation",
         json={
-            "name": "2ª DRP - Aparecida",
+            "name": "2ª DRP - Aparecida Norte",
             "adsl_vpn": True,
             "link": "7ª DP  Aparecida",
             "ip": "10.11.1.1",
@@ -34,14 +34,14 @@ def test_post_city_error_as_admin(client: TestClient):
         headers=ADMIN_HEADER
     )
     assert response.status_code == 400
-    assert response.json()["message"] == "Cidade invalida."
+    assert response.json()["message"] == "Cidade não cadastrada."
 
 
 def test_post_regional_error_as_admin(client: TestClient):
     response = client.post(
         "/workstation",
         json={
-            "name": "2ª DRP - Aparecida",
+            "name": "2ª DRP - Aparecida Norte",
             "adsl_vpn": True,
             "link": "7ª DP  Aparecida",
             "ip": "10.11.1.1",
@@ -51,7 +51,7 @@ def test_post_regional_error_as_admin(client: TestClient):
         headers=ADMIN_HEADER
     )
     assert response.status_code == 400
-    assert response.json()["message"] == "Regional invalida."
+    assert response.json()["message"] == "Erro ao processar dados"
 
 # post as manager
 
@@ -60,7 +60,7 @@ def test_post_workstation_as_manager(client: TestClient):
     response = client.post(
         "/workstation",
         json={
-            "name": "2ª DRP - Aparecida",
+            "name": "2ª DRP - Aparecida Sul",
             "adsl_vpn": True,
             "link": "7ª DP  Aparecida",
             "ip": "10.11.1.1",
@@ -109,7 +109,7 @@ def test_post_workstation_as_basic(client: TestClient):
     response = client.post(
         "/workstation",
         json={
-            "name": "2ª DRP - Aparecida",
+            "name": "2ª DRP - Aparecida Oeste",
             "adsl_vpn": False,
             "link": "7ª DP  Aparecida",
             "ip": "10.11.1.1",
@@ -120,7 +120,7 @@ def test_post_workstation_as_basic(client: TestClient):
         headers=BASIC_HEADER
     )
     assert response.status_code == 401
-    assert response.json()["message"] == "Acesso Negado"
+    assert response.json()["message"] == "Acesso negado"
 
 # post as public
 
@@ -129,7 +129,7 @@ def test_post_workstation_as_public(client: TestClient):
     response = client.post(
         "/workstation",
         json={
-            "name": "2ª DRP - Aparecida",
+            "name": "2ª DRP - Aparecida Leste",
             "adsl_vpn": False,
             "link": "7ª DP  Aparecida",
             "ip": "10.11.1.1",
@@ -140,4 +140,4 @@ def test_post_workstation_as_public(client: TestClient):
         headers=BASIC_HEADER
     )
     assert response.status_code == 401
-    assert response.json()["message"] == "Acesso Negado"
+    assert response.json()["message"] == "Acesso negado"
