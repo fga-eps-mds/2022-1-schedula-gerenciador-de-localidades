@@ -1,5 +1,3 @@
-from urllib import response
-
 from fastapi.testclient import TestClient
 
 from utils.auth_utils import ADMIN_HEADER, BASIC_HEADER, MANAGER_HEADER

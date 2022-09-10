@@ -1,11 +1,6 @@
-import os
-import time
-from typing import Any, List, Union
-
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from passlib.context import CryptContext
 
 from routers import city, workstation
 from utils.auth_utils import get_authorization
