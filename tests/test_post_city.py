@@ -5,7 +5,7 @@ from utils.auth_utils import ADMIN_HEADER, BASIC_HEADER, MANAGER_HEADER
 
 def test_post_city_as_admin(client: TestClient):
     response = client.post(
-        "/city", json={"name": "test"},
+        "/city", json={"name": "test1"},
         headers=ADMIN_HEADER)
     assert response.status_code == 201
 
@@ -21,7 +21,7 @@ def test_post_city_invalid_name_as_admin(client: TestClient):
 def test_post_city_as_manager(client: TestClient):
     response = client.post(
         "/city",
-        json={"name": "test"},
+        json={"name": "test2"},
         headers=MANAGER_HEADER)
     assert response.status_code == 201
 
