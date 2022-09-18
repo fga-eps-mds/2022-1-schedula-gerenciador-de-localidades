@@ -109,6 +109,7 @@ async def post_workstation(
 @router.get("/workstation", tags=["Workstation"])
 def get_workstation(
     id: Union[int, None] = None,
+    regional_id: Union[int, None] = None,
     regional: Union[bool, None] = None,
     db: Session = Depends(get_db),
 ):
@@ -148,12 +149,44 @@ def get_workstation(
                         "data": workstation,
                     },
                 )
-        if regional is not None:
+        if regional:
             all_data = (
                 db.query(Workstation)
                 .filter(Workstation.active, Workstation.regional == regional)
                 .all()
             )
+            if all_data is None:
+                return JSONResponse(
+                    status_code=status.HTTP_200_OK,
+                    content={
+                        "message": "Dados não encontrados",
+                        "error": None,
+                        "data": None,
+                    },
+                )
+            else:
+                all_data_json = jsonable_encoder(all_data)
+                for workstation in all_data_json:
+                    phones = (
+                        db.query(phone)
+                        .filter_by(workstation_id=workstation["id"])
+                        .all()
+                    )
+                    phones = jsonable_encoder(phones)
+                    workstation["phones"] = [phon["number"] for phon in phones]
+                return JSONResponse(
+                    status_code=status.HTTP_200_OK,
+                    content={
+                        "message": "Dados buscados com sucesso",
+                        "error": None,
+                        "data": all_data_json,
+                    },
+                )
+        if regional_id:
+            all_data = (
+                db.query(Workstation) .filter(
+                    Workstation.active,
+                    Workstation.regional_id == regional_id) .all())
             if all_data is None:
                 return JSONResponse(
                     status_code=status.HTTP_200_OK,
