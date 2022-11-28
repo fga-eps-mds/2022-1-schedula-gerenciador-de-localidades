@@ -22,7 +22,7 @@ services:
     image: postgres:latest
     container_name: schedula_location_db
     ports:
-      - "5432:5432"
+      - "5104:5432"
     volumes:
       - ./.ignore/postgres/postgres:/var/lib/postgresql/data
     environment:
@@ -36,6 +36,6 @@ services:
       PGADMIN_DEFAULT_EMAIL: "schedula@gmail.com"
       PGADMIN_DEFAULT_PASSWORD: "schedula123!"
     ports:
-      - "16543:80"
+      - "16544:80"
     depends_on:
       - postgres
