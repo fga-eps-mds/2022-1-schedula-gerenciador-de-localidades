@@ -13,19 +13,10 @@ export class CitiesService {
     ){}
 
     async createCity(dto: CreateCityDto) : Promise<City>{
-        const{
-            name,
-            state,
-        } = dto;
-
+        const date = new Date();
+        const city = this.cityRepo.create({ ...dto });
         try{
-            const city = this.cityRepo.create();
-
-            city.name = name;
-            city.state = state;
-
-            await city.save();
-            return city;
+            return await city.save();
         }catch(error){
             throw new InternalServerErrorException(error.message);
         }
