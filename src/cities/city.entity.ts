@@ -1,13 +1,13 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class City extends BaseEntity{
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+export class City extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column()
-    state: string;
+  @Column()
+  state: string;
 }
