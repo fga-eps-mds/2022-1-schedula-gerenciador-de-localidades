@@ -28,7 +28,7 @@ export class CitiesService {
   async findCities(): Promise<City[]> {
     const cities = await this.cityRepo.find();
 
-    if (!cities) {
+    if (cities.length === 0) {
       throw new NotFoundException('Não existem cidades cadastradas');
     }
     return cities;
@@ -50,7 +50,7 @@ export class CitiesService {
       city.name = name;
       city.state = state;
 
-      await city.save();
+      await this.cityRepo.save(city);
       return city;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
@@ -59,6 +59,7 @@ export class CitiesService {
 
   async deleteCity(idCity: string) {
     const result = await this.cityRepo.delete({ id: idCity });
+    if (!result) throw new NotFoundException('Cidade não encontrada');
     if (result.affected === 0) {
       throw new NotFoundException('Não foi encontrada uma cidade com este id');
     }
